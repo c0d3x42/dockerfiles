@@ -1,0 +1,31 @@
+version: '3.2'
+
+services:
+  qpid:
+    image: scholzj/qpid-cpp
+    environment:
+      QPIDD_ADMIN_USERNAME: admin
+      QPIDD_ADMIN_PASSWORD: admin
+    expose:
+      - 5671
+      - 5672
+    ports:
+      - '5671:5671'
+      - '5672:5672'
+    networks:
+      default:
+        aliases:
+          - qpid
+
+  rsyslog:
+    image: c0d3x42/rsyslog-amqp
+    command:
+      ['/app/rsyslog/sbin/rsyslogd', '-dnf', '/app/rsyslog/etc/rsyslog.conf']
+    expose:
+      - 514
+    volumes:
+      - type: bind
+        source: /home/vince/Projects/dockerfiles/rsyslog-qpid/rsyslog-amqp.conf
+        target: /app/rsyslog/etc/rsyslog.d/amqp.conf
+    networks:
+      - default

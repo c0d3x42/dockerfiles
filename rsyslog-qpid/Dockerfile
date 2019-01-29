@@ -39,7 +39,7 @@ RUN yum -y install postgresql-libs postgresql-devel
 
 ENV LIBFASTJSON_LIBS -L/app/rsyslog/lib -lfastjson
 ENV LIBFASTJSON_CFLAGS -I /app/rsyslog/include/libfastjson
-ENV PROTON_LIBS -lqpid-proton-core
+ENV PROTON_LIBS -lqpid-proton-core -lqpid-proton -lqpid-proton-proactor
 
 RUN yum -y install libmaxminddb libmaxminddb-devel liblognorm liblognorm-devel
 
@@ -47,6 +47,7 @@ RUN cd /tmp/build/rsyslog && ./autogen.sh --prefix=/app/rsyslog \
     --enable-omamqp1 --enable-pgsql \
     --enable-debug --enable-diagtools --enable-usertools \
     --enable-impstats \
+    --enable-imtcp \
     --enable-imptcp \
     --enable-omhttp \
     --enable-omstdout \
@@ -67,15 +68,15 @@ RUN curl -o /etc/yum.repos.d/qpid-proton-devel.repo http://repo.effectivemessagi
         && yum clean all
 
 COPY --from=builder /app /app
-RUN mkdir -p /app/rsyslog/etc/rsyslog.d
+RUN mkdir -p /app/rsyslog/etc/rsyslog.d /app/rsyslog/logs
 VOLUME /app/rsyslog/etc/rsyslog.d
+VOLUME /app/rsyslog/logs
 
 COPY rsyslog.conf /app/rsyslog/etc/rsyslog.conf
-
-
-USER qpidd:qpidd
+COPY rsyslog-amqp.conf /etc/rsyslog/etc/rsyslog.d/amqp.conf
+COPY docker-entrypoint-rsyslog.sh /docker-entrypoint.sh
 
 # Expose port and run
-EXPOSE 5671 5672
+EXPOSE 514
 #CMD ["qpidd"]
-CMD ['bash']
+ENTRYPOINT ["/docker-entrypoint.sh"]
