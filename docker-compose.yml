@@ -3,6 +3,7 @@ version: '3.2'
 services:
   qpid:
     image: scholzj/qpid-cpp
+    #    command: '--log-to-stdout yes --log-enable trace+:Security'
     environment:
       QPIDD_ADMIN_USERNAME: admin
       QPIDD_ADMIN_PASSWORD: admin
@@ -25,7 +26,11 @@ services:
       - 514
     volumes:
       - type: bind
-        source: /home/vince/Projects/dockerfiles/rsyslog-qpid/rsyslog-amqp.conf
+        source: ./rsyslog-qpid/rsyslog-amqp.conf
         target: /app/rsyslog/etc/rsyslog.d/amqp.conf
+      - type: bind
+        source: ./rsyslog-qpid/rsyslog-simple.conf
+        target: /app/rsyslog/etc/rsyslog.conf
+
     networks:
       - default

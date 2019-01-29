@@ -49,7 +49,6 @@ RUN cd /tmp/build/rsyslog && ./autogen.sh --prefix=/app/rsyslog \
     --enable-impstats \
     --enable-imtcp \
     --enable-imptcp \
-    --enable-omfile \
     --enable-omhttp \
     --enable-omstdout \
     --enable-omruleset \
@@ -61,26 +60,7 @@ RUN cd /tmp/build/rsyslog && ./autogen.sh --prefix=/app/rsyslog \
     --enable-mmdblookup \
     && make && make install
 
-FROM centos:centos7 as rsyslog
-RUN curl -o /etc/yum.repos.d/qpid-proton-devel.repo http://repo.effectivemessaging.com/qpid-proton-devel.repo \
-        && yum -y install epel-release \
-        && yum -y --setopt=tsflag=nodocs --exclude=python2-qpid\* install qpid-proton-c \
-          postgresql-libs libmaxminddb libestr \
-        && yum clean all
-
-COPY --from=builder /app /app
-RUN mkdir -p /app/rsyslog/etc/rsyslog.d /app/rsyslog/logs
-VOLUME /app/rsyslog/etc/rsyslog.d
-VOLUME /app/rsyslog/logs
-
-COPY rsyslog.conf /app/rsyslog/etc/rsyslog.conf
-COPY rsyslog-amqp.conf /etc/rsyslog/etc/rsyslog.d/amqp.conf
-COPY docker-entrypoint-rsyslog.sh /docker-entrypoint.sh
-
-RUN yum -y install cyrus-sasl-plain cyrus-sasl-md5
-RUN yum -y install net-tools
-
 # Expose port and run
 EXPOSE 514
-#CMD ["qpidd"]
-ENTRYPOINT ["/docker-entrypoint.sh"]
+CMD ["sh"]
+#ENTRYPOINT ["/docker-entrypoint.sh"]
