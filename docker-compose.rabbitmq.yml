@@ -1,0 +1,36 @@
+version: '3.2'
+
+services:
+  rabbitmq:
+    #image: rabbitmq:3-management-alpine
+    image: c0d3x42/rabbitmq
+    hostname: my-rabbit
+    expose:
+      - 5671
+      - 5672
+    ports:
+      - '5671:5671'
+      - '5672:5672'
+      - '8080:15672'
+    networks:
+      default:
+        aliases:
+          - rabbit
+          - amqp
+
+  rsyslog:
+    image: c0d3x42/rsyslog-amqp
+    command:
+      ['/app/rsyslog/sbin/rsyslogd', '-dnf', '/app/rsyslog/etc/rsyslog.conf']
+    expose:
+      - 514
+    volumes:
+      - type: bind
+        source: ./rsyslog-qpid/rsyslog-rabbitmq.conf
+        target: /app/rsyslog/etc/rsyslog.d/rabbitmq.conf
+      - type: bind
+        source: ./rsyslog-qpid/rsyslog.conf
+        target: /app/rsyslog/etc/rsyslog.conf
+
+    networks:
+      - default

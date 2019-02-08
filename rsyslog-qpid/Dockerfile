@@ -42,15 +42,22 @@ ENV LIBFASTJSON_CFLAGS -I /app/rsyslog/include/libfastjson
 ENV PROTON_LIBS -lqpid-proton-core -lqpid-proton -lqpid-proton-proactor
 
 RUN yum -y install libmaxminddb libmaxminddb-devel liblognorm liblognorm-devel
+RUN yum -y install librabbitmq librabbitmq-devel
+RUN yum -y install librelp librelp-devel
 
 RUN cd /tmp/build/rsyslog && ./autogen.sh --prefix=/app/rsyslog \
     --enable-omamqp1 --enable-pgsql \
+    --enable-omrabbitmq \
     --enable-debug --enable-diagtools --enable-usertools \
     --enable-impstats \
+    --enable-imfile \
     --enable-imtcp \
     --enable-imptcp \
+    --enable-inet \
+#    --enable-relp \
     --enable-omfile \
     --enable-omhttp \
+    --enable-omprog \
     --enable-omstdout \
     --enable-omruleset \
 #    --enable-mmnormalize \
@@ -69,16 +76,16 @@ RUN curl -o /etc/yum.repos.d/qpid-proton-devel.repo http://repo.effectivemessagi
         && yum clean all
 
 COPY --from=builder /app /app
-RUN mkdir -p /app/rsyslog/etc/rsyslog.d /app/rsyslog/logs
+RUN yum -y install cyrus-sasl-plain cyrus-sasl-md5 librabbitmq
+RUN yum -y install net-tools
+RUN mkdir -p /app/rsyslog/etc/rsyslog.d /app/rsyslog/logs /app/rsyslog/spool
 VOLUME /app/rsyslog/etc/rsyslog.d
 VOLUME /app/rsyslog/logs
 
 COPY rsyslog.conf /app/rsyslog/etc/rsyslog.conf
-COPY rsyslog-amqp.conf /etc/rsyslog/etc/rsyslog.d/amqp.conf
+#COPY rsyslog-amqp.conf /etc/rsyslog/etc/rsyslog.d/amqp.conf
 COPY docker-entrypoint-rsyslog.sh /docker-entrypoint.sh
 
-RUN yum -y install cyrus-sasl-plain cyrus-sasl-md5
-RUN yum -y install net-tools
 
 # Expose port and run
 EXPOSE 514

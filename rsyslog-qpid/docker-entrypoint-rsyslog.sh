@@ -3,7 +3,7 @@ set -e
 
 RSYSLOG_BINARY=/app/rsyslog/sbin/rsyslogd
 
-# if command starts with an option, prepend qpidd
+# if command starts with an option, prepend rsyslogd
 if [ "${1:0:1}" = '-' ]; then
     set -- $RSYSLOG_BINARY "$@"
 fi
