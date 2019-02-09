@@ -60,9 +60,9 @@ static_resources:
             common_tls_context:
               tls_certificates:
                 - certificate_chain:
-                    filename: '/etc/cert_crt.pem'
+                    filename: '/etc/example-com.crt'
                   private_key:
-                    filename: '/etc/cert_key.pem'
+                    filename: '/etc/example-com.key'
   clusters:
     - name: service1
       connect_timeout: 0.25s

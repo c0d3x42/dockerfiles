@@ -5,6 +5,7 @@ docker exec -ti dockerfiles_qpid_1 qpid-receive -b admin/admin@localhost -a rsys
 
 `docker build -t c0d3x42/rsyslog-amqp rsyslog-qpid`
 `docker build -t c0d3x42/rabbitmq rabbitmq`
+`docker build -t c0d3x42/mqtt-auth mqtt-auth`
 
 # Config
 
