@@ -21,5 +21,7 @@ RUN apk update && \
 #RUN mkdir /mosquitto/lib && \
 #    install -s -m755 /mosquitto/src/mosquitto-auth-plug/auth-plug.so /mosquitto/lib/auth-plug.so
 
+RUN mkdir /mosquitto/config.d
+
 EXPOSE 1881 9001
 
