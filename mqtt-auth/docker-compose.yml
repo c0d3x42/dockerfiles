@@ -1,0 +1,13 @@
+version: '3.5'
+
+services:
+  mqtt:
+    image: c0d3x42/mqtt-auth:1
+    configs:
+      - source: config-1
+        target: /mqtt_config
+        mode: 0440
+
+configs:
+  config-1:
+    external: true
