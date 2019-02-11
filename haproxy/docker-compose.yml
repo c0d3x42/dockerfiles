@@ -1,0 +1,22 @@
+version: '3.5'
+services:
+  haproxy:
+    image: c0d3x42/haproxy
+    command: '-f /usr/local/etc/haproxy/haproxy.cfg'
+    ports:
+      - '80:80'
+      - '443:443'
+      - '6514:6514'
+    configs:
+      - source: config_main_haproxy
+        target: /haproxy/main.conf
+        mode: 0440
+      - source: config_main_rsyslog_map
+        target: /haproxy/rsyslog.map
+        mode: 0440
+
+configs:
+  config_main_rsyslog_map:
+    external: true
+  config_main_haproxy:
+    external: true
